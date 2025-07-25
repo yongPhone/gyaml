@@ -388,12 +388,40 @@ func getByPath(root interface{}, path string) Result {
 		// Handle array queries like #(key=value)
 		if strings.HasPrefix(part, "#(") && strings.HasSuffix(part, ")") {
 			query := part[2 : len(part)-1] // Remove #( and )
-			return handleArrayQuery(current, query)
+			result := handleArrayQuery(current, query)
+			if !result.Exists() {
+				return result
+			}
+			// If there are more parts after the query, continue processing
+			if i < len(parts)-1 {
+				remainingPath := strings.Join(parts[i+1:], ".")
+				// Parse the result back to interface{} for further processing
+				var parsed interface{}
+				if result.Type == YAML {
+					err := yaml.Unmarshal([]byte(result.Raw), &parsed)
+					if err != nil {
+						return Result{Type: Null}
+					}
+				} else {
+					parsed = result.Value()
+				}
+				return getByPath(parsed, remainingPath)
+			}
+			return result
 		}
 
 		// Handle array access with wildcard or specific operations that start with #
+		// But first check if it's actually a map key that starts with #
 		if strings.HasPrefix(part, "#") && part != "#" {
-			// Handle cases like #key
+			// Check if current is a map and has this exact key
+			if obj, ok := current.(map[string]interface{}); ok {
+				if _, exists := obj[part]; exists {
+					// It's a real key that starts with #, treat as normal key
+					current = obj[part]
+					continue
+				}
+			}
+			// Only treat as array operation if it's not a real key
 			remaining := part[1:]
 			return handleArrayOperation(current, remaining)
 		}
@@ -441,19 +469,48 @@ func handleArrayQuery(current interface{}, query string) Result {
 		return Result{Type: Null}
 	}
 
-	// Parse the query (simple key=value for now)
-	parts := strings.SplitN(query, "=", 2)
-	if len(parts) != 2 {
-		return Result{Type: Null}
+	// Parse the query - support various operators
+	var key, operator, value string
+
+	// Try different operators in order of precedence
+	operators := []string{">=", "<=", "!=", ">", "<", "="}
+	for _, op := range operators {
+		if strings.Contains(query, op) {
+			parts := strings.SplitN(query, op, 2)
+			if len(parts) == 2 {
+				key = strings.TrimSpace(parts[0])
+				operator = op
+				value = strings.Trim(strings.TrimSpace(parts[1]), `"'`)
+				break
+			}
+		}
 	}
 
-	key := parts[0]
-	value := strings.Trim(parts[1], `"'`)
+	// If no operator found, assume equality
+	if operator == "" {
+		if strings.Contains(query, "=") {
+			parts := strings.SplitN(query, "=", 2)
+			if len(parts) == 2 {
+				key = strings.TrimSpace(parts[0])
+				operator = "="
+				value = strings.Trim(strings.TrimSpace(parts[1]), `"'`)
+			}
+		} else {
+			return Result{Type: Null}
+		}
+	}
 
 	for _, item := range arr {
 		if obj, ok := item.(map[string]interface{}); ok {
 			if val, exists := obj[key]; exists {
-				if fmt.Sprintf("%v", val) == value {
+				if matchesCondition(val, operator, value) {
+					return makeResult(item)
+				}
+			}
+		} else {
+			// Handle direct array of values (e.g., [1, 2, 3, 4, 5])
+			if key == "" && operator != "" {
+				if matchesCondition(item, operator, value) {
 					return makeResult(item)
 				}
 			}
@@ -461,6 +518,75 @@ func handleArrayQuery(current interface{}, query string) Result {
 	}
 
 	return Result{Type: Null}
+}
+
+// matchesCondition checks if a value matches the given condition
+func matchesCondition(val interface{}, operator, expected string) bool {
+	valStr := fmt.Sprintf("%v", val)
+
+	switch operator {
+	case "=":
+		return valStr == expected
+	case "!=":
+		return valStr != expected
+	case ">":
+		return compareNumbers(val, expected) > 0
+	case "<":
+		return compareNumbers(val, expected) < 0
+	case ">=":
+		return compareNumbers(val, expected) >= 0
+	case "<=":
+		return compareNumbers(val, expected) <= 0
+	default:
+		return false
+	}
+}
+
+// compareNumbers compares two values as numbers, returns:
+// 1 if val > expected, -1 if val < expected, 0 if equal or not comparable
+func compareNumbers(val interface{}, expectedStr string) int {
+	// Convert val to float64
+	var valFloat float64
+	switch v := val.(type) {
+	case int:
+		valFloat = float64(v)
+	case int8, int16, int32, int64:
+		if i, err := strconv.ParseInt(fmt.Sprintf("%v", v), 10, 64); err == nil {
+			valFloat = float64(i)
+		} else {
+			return 0
+		}
+	case uint, uint8, uint16, uint32, uint64:
+		if i, err := strconv.ParseUint(fmt.Sprintf("%v", v), 10, 64); err == nil {
+			valFloat = float64(i)
+		} else {
+			return 0
+		}
+	case float32:
+		valFloat = float64(v)
+	case float64:
+		valFloat = v
+	default:
+		// Try to parse as string
+		if f, err := strconv.ParseFloat(fmt.Sprintf("%v", v), 64); err == nil {
+			valFloat = f
+		} else {
+			return 0
+		}
+	}
+
+	// Convert expected to float64
+	expectedFloat, err := strconv.ParseFloat(expectedStr, 64)
+	if err != nil {
+		return 0
+	}
+
+	if valFloat > expectedFloat {
+		return 1
+	} else if valFloat < expectedFloat {
+		return -1
+	}
+	return 0
 }
 
 // handleArrayOperation handles operations like #.key (get all values of key from array elements)

@@ -123,6 +123,10 @@ func (t Result) Uint() uint64 {
 		n, _ := strconv.ParseUint(t.Str, 10, 64)
 		return n
 	case Number:
+		// Return 0 for negative numbers as they cannot be represented as uint64
+		if t.Num < 0 {
+			return 0
+		}
 		return uint64(t.Num)
 	}
 }

@@ -41,7 +41,7 @@ features:
   beta_feature: true
 `
 
-	fmt.Println("=== GYAML Usage Examples ===\n")
+	fmt.Println("=== GYAML Usage Examples ===")
 
 	// 1. Basic field access
 	fmt.Println("1. Basic field access:")

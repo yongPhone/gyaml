@@ -71,28 +71,28 @@ programmers:
 
 func ExampleResult_ForEach() {
 	yaml := `
-servers:
-  web1:
-    host: "192.168.1.10"
-    port: 8080
-  web2:
-    host: "192.168.1.11"
-    port: 8081
+users:
+  - name: "Alice"
+    role: "admin"
+  - name: "Bob"
+    role: "user"
 `
 
-	result := gyaml.Get(yaml, "servers")
+	result := gyaml.Get(yaml, "users")
 	count := 0
 	result.ForEach(func(key, value gyaml.Result) bool {
 		count++
-		fmt.Printf("Found server: %s\n", key.String())
+		name := value.Get("name").String()
+		role := value.Get("role").String()
+		fmt.Printf("User %s: %s (%s)\n", key.String(), name, role)
 		return true // continue iteration
 	})
-	fmt.Printf("Total servers: %d\n", count)
+	fmt.Printf("Total users: %d\n", count)
 
 	// Output:
-	// Found server: web1
-	// Found server: web2
-	// Total servers: 2
+	// User 0: Alice (admin)
+	// User 1: Bob (user)
+	// Total users: 2
 }
 
 func ExampleParse() {

@@ -102,6 +102,12 @@ func (t Result) Int() int64 {
 		n, _ := strconv.ParseInt(t.Str, 10, 64)
 		return n
 	case Number:
+		// Check if we can parse from Raw to avoid float64 precision loss
+		if t.Raw != "" {
+			if n, err := strconv.ParseInt(strings.TrimSpace(t.Raw), 10, 64); err == nil {
+				return n
+			}
+		}
 		return int64(t.Num)
 	}
 }
@@ -253,29 +259,29 @@ func makeResult(value interface{}) Result {
 	case string:
 		return Result{Type: String, Str: v}
 	case int:
-		return Result{Type: Number, Num: float64(v)}
+		return Result{Type: Number, Num: float64(v), Raw: strconv.FormatInt(int64(v), 10)}
 	case int8:
-		return Result{Type: Number, Num: float64(v)}
+		return Result{Type: Number, Num: float64(v), Raw: strconv.FormatInt(int64(v), 10)}
 	case int16:
-		return Result{Type: Number, Num: float64(v)}
+		return Result{Type: Number, Num: float64(v), Raw: strconv.FormatInt(int64(v), 10)}
 	case int32:
-		return Result{Type: Number, Num: float64(v)}
+		return Result{Type: Number, Num: float64(v), Raw: strconv.FormatInt(int64(v), 10)}
 	case int64:
-		return Result{Type: Number, Num: float64(v)}
+		return Result{Type: Number, Num: float64(v), Raw: strconv.FormatInt(v, 10)}
 	case uint:
-		return Result{Type: Number, Num: float64(v)}
+		return Result{Type: Number, Num: float64(v), Raw: strconv.FormatUint(uint64(v), 10)}
 	case uint8:
-		return Result{Type: Number, Num: float64(v)}
+		return Result{Type: Number, Num: float64(v), Raw: strconv.FormatUint(uint64(v), 10)}
 	case uint16:
-		return Result{Type: Number, Num: float64(v)}
+		return Result{Type: Number, Num: float64(v), Raw: strconv.FormatUint(uint64(v), 10)}
 	case uint32:
-		return Result{Type: Number, Num: float64(v)}
+		return Result{Type: Number, Num: float64(v), Raw: strconv.FormatUint(uint64(v), 10)}
 	case uint64:
-		return Result{Type: Number, Num: float64(v)}
+		return Result{Type: Number, Num: float64(v), Raw: strconv.FormatUint(v, 10)}
 	case float32:
-		return Result{Type: Number, Num: float64(v)}
+		return Result{Type: Number, Num: float64(v), Raw: strconv.FormatFloat(float64(v), 'g', -1, 32)}
 	case float64:
-		return Result{Type: Number, Num: v}
+		return Result{Type: Number, Num: v, Raw: strconv.FormatFloat(v, 'g', -1, 64)}
 	default:
 		// For complex types, marshal back to YAML
 		raw, err := yaml.Marshal(v)

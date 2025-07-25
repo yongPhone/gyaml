@@ -2,8 +2,8 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/yongPhone/gyaml.svg)](https://pkg.go.dev/github.com/yongPhone/gyaml)
 [![GYAML Tests](https://github.com/yongPhone/gyaml/workflows/test/badge.svg)](https://github.com/yongPhone/gyaml/actions)
-[![Go Report Card](https://goreportcard.com/badge/github.com/yongPhone/gyaml)](https://goreportcard.com/report/github.com/yongPhone/gyaml)
-[![Coverage](https://img.shields.io/badge/Coverage-90.8%25-brightgreen)](https://github.com/yongPhone/gyaml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/yongPhone/gyaml)](https://goreportcard.com/report/yongPhone/gyaml)
+[![Coverage](https://img.shields.io/badge/Coverage-90.9%25-brightgreen)](https://github.com/yongPhone/gyaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **🚀 A fast and simple way to get values from YAML in Go**
@@ -13,7 +13,7 @@ GYAML makes reading YAML as simple as `gyaml.Get(yaml, "path.to.value")`. Whethe
 **Why developers choose GYAML:**
 - 🎯 **One-line data access** - No struct marshaling required for simple reads
 - ⚡ **Fast performance** - Optimized with minimal allocations  
-- 🛡️ **Well-tested** - 90.8% test coverage for reliability
+- 🛡️ **Well-tested** - 90.9% test coverage for reliability
 - 🔄 **Familiar API** - Same interface as popular gjson but for YAML
 - 🎛️ **YAML-native** - Proper handling of comments, multi-line strings, and YAML features
 
@@ -23,7 +23,7 @@ GYAML is inspired by [tidwall/gjson](https://github.com/tidwall/gjson) but desig
 
 **Production-Ready with Exceptional Test Coverage**
 
-- **90.8% Code Coverage** - Comprehensive test suite ensuring reliability
+- **90.9% Code Coverage** - Comprehensive test suite ensuring reliability
 - **82+ Test Cases** - Covering edge cases, error handling, and performance scenarios  
 - **Zero Race Conditions** - Thread-safe with race detection validation
 - **Benchmark Tested** - Performance validated across all operations
@@ -39,7 +39,7 @@ GYAML is inspired by [tidwall/gjson](https://github.com/tidwall/gjson) but desig
 - ⚡ **Good performance** - Optimized for speed with minimal memory allocations
 - 🔒 **Thread-safe** - Safe for use in concurrent applications
 - 📦 **Lightweight** - Only depends on YAML parser
-- 🧪 **Well-tested** - 90.8% test coverage for reliability
+- 🧪 **Well-tested** - 90.9% test coverage for reliability
 
 ## 💡 Common Use Cases
 
@@ -359,7 +359,7 @@ BenchmarkValid-8                   23287    50985 ns/op    35264 B/op    593 all
 
 GYAML takes testing seriously with an industry-leading test suite:
 
-- **90.8% Code Coverage** - One of the highest in the Go ecosystem
+- **90.9% Code Coverage** - One of the highest in the Go ecosystem
 - **82+ Test Cases** - Comprehensive coverage across all features
 - **Zero Race Conditions** - Validated with `go test -race`
 - **Production-Ready Quality** - Unit tests, edge cases, error handling, performance benchmarks, and concurrency safety
@@ -417,7 +417,7 @@ host := gyaml.Get(yamlData, "database.host").String()
 port := gyaml.Get(yamlData, "database.port").Int()
 ```
 
-GYAML is well-tested with 90.8% code coverage and designed for production use. Give it a try and see if it simplifies your YAML processing workflow.
+GYAML is well-tested with 90.9% code coverage and designed for production use. Give it a try and see if it simplifies your YAML processing workflow.
 
 ---
 

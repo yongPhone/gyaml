@@ -2,7 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/yongPhone/gyaml.svg)](https://pkg.go.dev/github.com/yongPhone/gyaml)
 [![GYAML Tests](https://github.com/yongPhone/gyaml/workflows/test/badge.svg)](https://github.com/yongPhone/gyaml/actions)
-[![Go Report Card](https://goreportcard.com/badge/github.com/yongPhone/gyaml)](https://goreportcard.com/report/yongPhone/gyaml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/yongPhone/gyaml)](https://goreportcard.com/report/github.com/yongPhone/gyaml)
 [![Coverage](https://img.shields.io/badge/Coverage-90.9%25-brightgreen)](https://github.com/yongPhone/gyaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 

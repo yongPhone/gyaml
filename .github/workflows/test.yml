@@ -57,4 +57,9 @@ jobs:
       run: go test -race -coverprofile=coverage.txt -covermode=atomic
       
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3 
+      uses: codecov/codecov-action@v3
+      
+    - name: Refresh Go Report Card
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        curl -d "repo=github.com/yongPhone/gyaml" https://goreportcard.com/checks || true 
